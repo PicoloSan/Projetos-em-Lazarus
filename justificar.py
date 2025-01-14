@@ -1,4 +1,5 @@
 # Importando bibliotecas do Excel, do Chrome e do Selenium
+import ctypes
 import openpyxl                                                   # type: ignore
 from selenium import webdriver                                    # type: ignore
 from selenium.webdriver.common.by import By                       # type: ignore
@@ -7,6 +8,21 @@ from selenium.webdriver.support.ui import WebDriverWait           # type: ignore
 from selenium.webdriver.support import expected_conditions as EC  # type: ignore
 import time
 import json
+
+# Função para alterar a prioridade
+def set_process_priority(priority_class):
+    # Obtém o identificador do processo atual
+    process_handle = ctypes.windll.kernel32.GetCurrentProcess()
+    # Altera a prioridade do processo
+    ctypes.windll.kernel32.SetPriorityClass(process_handle, priority_class)
+
+# Prioridades disponíveis
+IDLE_PRIORITY_CLASS = 0x00000040
+BELOW_NORMAL_PRIORITY_CLASS = 0x00004000
+NORMAL_PRIORITY_CLASS = 0x00000020
+ABOVE_NORMAL_PRIORITY_CLASS = 0x00040000
+HIGH_PRIORITY_CLASS = 0x00000080
+REALTIME_PRIORITY_CLASS = 0x00000100
 
 # função escreve no arquivo
 def write_log(texto, caminho_arquivo):
@@ -27,6 +43,9 @@ def read_json(caminho_arquivo):
     with open(caminho_arquivo, 'r') as arquivo:
         dados = json.load(arquivo)
         return dados
+
+# Defina a prioridade desejada, por exemplo, abaixo do normal
+set_process_priority(BELOW_NORMAL_PRIORITY_CLASS)
 
 # lê os arquivos de configuração do json
 dados = read_json('justificar.json')
